@@ -27,7 +27,7 @@ my %WriteMakefileArgs = (
     },
     'META_MERGE' => {
         resources => {
-            repository => '',
+            repository => 'git://git@github.com:alexrj/MooseX-Collect.git',
         },
     },
 );
