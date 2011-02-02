@@ -158,6 +158,7 @@ MooseX::Collect - provides method modifier for collecting method calls from role
     sub items () { qw/banana/ }
 
 
+
     package Foo;
     use Moose;
     use MooseX::Collect;
@@ -188,6 +189,7 @@ MooseX::Collect - provides method modifier for collecting method calls from role
     with qw(B C);
 
 
+
     my @items = $Foo->items;  # watermelon, apple, orange, banana
 
 
@@ -212,7 +214,7 @@ Any arguments passed to the newly created accessor will be passed to each method
 
 =item B<collect $method_name =E<gt> ()>
 
-This will install a method of a given C<$name> into the current class. You can pass a hash 
+This will install a method of a given C<$method_name> into the current class. You can pass a hash 
 of options to the function. Available options are listed below.
 As a shortcut, you can pass a coderef: it will be used as a I<collector> option (see below).
 
@@ -232,6 +234,7 @@ provider methods. The order is relevant. The value I<self> enables searching of 
 inside the current class too. The default value is I<self, superclass, roles>.
 
 =item I<method_order =E<gt> 'standard' | 'reverse'>
+
 =item I<method_order =E<gt> 'top_down' | 'bottom_up'>
 
 This option lets you reverse the default method resolution order, which is I<standard>
@@ -248,7 +251,7 @@ recursion), does not affect searching in roles because they have no hierarchy.
 =item I<context> =E<gt> 'scalar' | 'list'>
 
 This arguments lets you set the Perl context to use when calling the provider methods. By 
-default it's value is I<list>.
+default its value is I<list>.
 
 =item I<collector =E<gt> CODEREF>
 
@@ -259,15 +262,23 @@ It will receive the results in @_ and it's expected to return a list.
 
 =back
 
+=head1 CAVEATS
+
+Don't use the I<collect> method modifier to collect data from methods that are already
+defined as attribute accessors or extended by other method modifiers such as I<around>, 
+I<override> etc. or by another I<collect> modifier. In such cases, the behaviour of this 
+module is B<undefined> and B<unsupported>. You should avoid such usage until a proper
+policy is defined.
+
 =head1 SEE ALSO
 
 =over 4
 
-=item C<Moose>
+=item L<Moose>
 
-=item C<Moose::Role>
+=item L<Moose::Role>
 
-=item C<MooseX::ComposedBehavior>
+=item L<MooseX::ComposedBehavior>
 
 =back
 
@@ -275,6 +286,7 @@ It will receive the results in @_ and it's expected to return a list.
 
 Please report any bugs to C<bug-moosex-collect@rt.cpan.org>, or through the web
 interface at L<https://rt.cpan.org/Public/Bug/Report.html?Queue=MooseX-Collect>.
+The author will be happy to read your feedback.
 
 =head1 AUTHOR
 

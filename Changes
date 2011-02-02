@@ -1,3 +1,6 @@
+    - fixed POD glitches
+    - added a CAVEATS section to the POD
+
 version 0.90 (2011-02-01):
 
     - new
