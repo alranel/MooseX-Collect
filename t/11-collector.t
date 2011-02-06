@@ -9,7 +9,7 @@ use Test::More tests => 1;
     use MooseX::Collect;
     use t::classes;
     
-    sub items { qw/me/ }
+    sub items () { qw/me/ }
     
     collect 'items' => sub {
         my $self = shift;

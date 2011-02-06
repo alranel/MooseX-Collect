@@ -10,12 +10,12 @@ sub items { qw/b/ }
 package C;
 use Moose::Role;
 sub items { qw/c/ }
-sub multiply { return map 2*$_, @_ }
+sub multiply { shift; return map 2*$_, @_ }
 
 package D;
 use Moose;
 sub items { qw/d/ }
-sub multiply { return map 3*$_, @_ }
+sub multiply { shift; return map 3*$_, @_ }
 
 package E;
 use Moose;
