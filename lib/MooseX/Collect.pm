@@ -88,21 +88,23 @@ sub parse_collect {
             grep $_->can('meta'), $obj_meta->linearized_isa;
         @superclasses = ($superclasses[0]) if !$init_args{superclass_recurse};
         
+        # retrieve our roles
+        my @roles = grep !$_->isa('Moose::Meta::Role::Composite'), 
+            $obj_meta->calculate_all_roles_with_inheritance;
+        
         # let's find out which methods we need to call
         my @methods = ();
         foreach (@{$init_args{from}}) {
-            if ($_ eq 'self') {
-                unshift @methods, grep !$_->isa('MooseX::Collect::Method'), 
-                    grep $_, map $obj_meta->get_method($_), @providers;
-            } else {
-                my @metaclasses = ();
-                push @metaclasses, @superclasses if $_ eq 'superclasses';
-                push @metaclasses, grep !$_->isa('Moose::Meta::Role::Composite'), 
-                    $obj_meta->calculate_all_roles_with_inheritance if $_ eq 'roles';
-                @metaclasses = reverse @metaclasses if $init_args{method_order} eq 'reverse';
-                foreach my $metaclass (@metaclasses) {
-                    push @methods, grep $_, map $metaclass->get_method($_), @providers;
-                }
+            my @metaclasses = ();
+            push @metaclasses, $obj_meta        if $_ eq 'self';
+            push @metaclasses, @superclasses    if $_ eq 'superclasses';
+            push @metaclasses, @roles           if $_ eq 'roles';
+            
+            @metaclasses = reverse @metaclasses if $init_args{method_order} eq 'reverse';
+            
+            foreach my $metaclass (@metaclasses) {
+                push @methods, grep !$_->isa('MooseX::Collect::Method'), 
+                    grep $_, map $metaclass->get_method($_), @providers;
             }
         }
         
@@ -154,9 +156,7 @@ MooseX::Collect - provides method modifier for collecting method calls from role
     package C;
     use Moose::Role;
     sub items () { qw/banana/ }
-
-
-
+    
     package Foo;
     use Moose;
     use MooseX::Collect;
@@ -164,13 +164,13 @@ MooseX::Collect - provides method modifier for collecting method calls from role
     # easy syntax
     collect 'items';
     
-    # explicit collector subroutine (allows you to process results)
+    # ...or with explicit collection subroutine (allows you to process results)
     collect 'items' => {
         my $self = shift;
         return @_;
     };
     
-    # explicit arguments for fine-grained configuration
+    # ...or with explicit arguments for fine-grained configuration
     collect 'itemz' => (
         provider     => 'items',
         from         => [qw(self superclasses roles)],
@@ -186,7 +186,7 @@ MooseX::Collect - provides method modifier for collecting method calls from role
     # 'with' statements must be called after any 'collect'
     with qw(B C);
 
-
+Then you can call your collector and get everything:
 
     my @items = $Foo->items;  # watermelon, apple, orange, banana
 
@@ -287,7 +287,7 @@ attribute (see above) to a different name than your collector name:
     my @items = Bar->new->get_items;  # orange, apple
 
 Note that the I<self> scope is relative to the object, and not to the class where the 
-collector is defined. So, if you add a C<from => 'self'> attribute in the above example,
+collector is defined. So, if you add a C<from =E<gt> 'self'> attribute in the above example,
 the call to C<get_items> will return "orange". The element "apple" will be available in 
 the I<superclasses> scope.
 
@@ -298,6 +298,25 @@ defined as attribute accessors or extended by other method modifiers such as I<a
 I<override> etc. or by another I<collect> modifier. In such cases, the behaviour of this 
 module is B<undefined> and B<unsupported>. You should avoid such usage until a proper
 policy (and the related test suite) is defined.
+
+As a general rule, C<collect> declarations should be done before every C<with> invocation 
+that you use to import roles in your class. This is because Moose will throw an error when 
+your roles provide methods with the same name unless your class defines such a method too.
+By calling C<collect> before C<with>, you install a method in your class and Moose will
+not complain. If you don't like this, you can populate the C<-excludes> attribute of C<with>
+(see L<Moose::Manual::Roles>) with your provider method name:
+
+    with 'B' => { -excludes => 'items' },
+         'C' => { -excludes => 'items' };
+    
+    collect 'items';
+
+Another workaround is to define a provider method in your class (whether you need it or not):
+
+    # the order of these three lines is not relevant:
+    with qw(B C);
+    collect 'items';
+    sub items () {}
 
 =head1 SEE ALSO
 

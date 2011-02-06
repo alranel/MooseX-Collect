@@ -1,3 +1,6 @@
+    - POD improvements
+    - little refactoring
+
 version 0.91 (2011-02-06):
 
     - collection methods now work correctly when inherited
