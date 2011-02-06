@@ -29,6 +29,9 @@ my %WriteMakefileArgs = (
         resources => {
             repository => 'git://git@github.com:alexrj/MooseX-Collect.git',
         },
+        no_index => {
+            package => [qw(MooseX::Collect::Method)]
+        },
     },
 );
 
