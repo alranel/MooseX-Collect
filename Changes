@@ -1,3 +1,4 @@
+    - collection methods are now inherited by subclasses
     - fixed POD glitches
     - added a CAVEATS section to the POD
 

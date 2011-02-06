@@ -84,10 +84,11 @@ sub parse_collect {
     # generate the collection subroutine
     my $body = sub {
         my ($self, @args) = @_;
+        my $obj_meta = $self->meta;
         
         # let's retrieve our superclasses
         my (undef, @superclasses) = map $_->meta, 
-            grep $_->can('meta'), $meta->linearized_isa;
+            grep $_->can('meta'), $obj_meta->linearized_isa;
         @superclasses = ($superclasses[0]) if !$init_args{superclass_recurse};
         
         # let's find out which methods we need to call
@@ -99,7 +100,7 @@ sub parse_collect {
                 my @metaclasses = ();
                 push @metaclasses, @superclasses if $_ eq 'superclasses';
                 push @metaclasses, grep !$_->isa('Moose::Meta::Role::Composite'), 
-                    $meta->calculate_all_roles_with_inheritance if $_ eq 'roles';
+                    $obj_meta->calculate_all_roles_with_inheritance if $_ eq 'roles';
                 @metaclasses = reverse @metaclasses if $init_args{method_order} eq 'reverse';
                 push @methods,
                     map $_->get_method($init_args{provider}),
