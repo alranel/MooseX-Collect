@@ -15,4 +15,5 @@ t/13-reverse.t
 t/14-norecurse.t
 t/15-self.t
 t/16-args.t
+t/17-subclass.t
 t/classes.pm
