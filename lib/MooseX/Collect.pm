@@ -165,7 +165,7 @@ MooseX::Collect - provides method modifier for collecting method calls from role
     collect 'items';
     
     # ...or with explicit collection subroutine (allows you to process results)
-    collect 'items' => {
+    collect 'items' => sub {
         my $self = shift;
         return @_;
     };
@@ -285,6 +285,8 @@ attribute (see above) to a different name than your collector name:
 
     package Baz;
     my @items = Bar->new->get_items;  # orange, apple
+
+This is required also if you define your collector method in a role that you import.
 
 Note that the I<self> scope is relative to the object, and not to the class where the 
 collector is defined. So, if you add a C<from =E<gt> 'self'> attribute in the above example,
