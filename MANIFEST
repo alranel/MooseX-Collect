@@ -17,4 +17,5 @@ t/15-self.t
 t/16-args.t
 t/17-subclass.t
 t/18-inherit.t
+t/19-fromrole.t
 t/classes.pm

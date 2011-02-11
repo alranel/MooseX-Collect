@@ -2,7 +2,7 @@ package MooseX::Collect;
 use strict;
 use warnings;
 
-our $VERSION = '0.91';
+our $VERSION = '0.92';
 
 sub import {
     my ($class, %args) = @_;

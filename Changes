@@ -1,3 +1,5 @@
+version 0.92 (2011-02-11):
+
     - POD improvements
     - little refactoring
     - new tests
